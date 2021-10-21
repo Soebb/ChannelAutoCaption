@@ -19,10 +19,10 @@ You can also use Markdown styles, supported Dynamic variables in seting caption 
 - You can add {variable_name} in caption, bot will replace these variables by its value according to file.
   Example: Title: {filename}
   Supported variables:
-  filename, ext
+  filename, ext, mime_tipe
   Additional variables:
-  For video files: width, height
-  For audio files: title, artist
+  For video files: width, height, duration
+  For audio files: title, artist, duration
 """
 
 
