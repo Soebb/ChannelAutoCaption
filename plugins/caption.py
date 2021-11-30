@@ -65,9 +65,9 @@ async def set(bot, message):
         await del_button(channel)
         await message.reply_text("✅The Button Removed Successfully.", quote=True)
 
-@autocaption.on_message(filters.channel & 
 
-@Bot.on_message(filters.private & (filters.video | filters.document | filters.audio ) & ~filters.edited, group=-1)
+
+@autocaption.on_message(filters.channel & (filters.video | filters.document | filters.audio ) & ~filters.edited, group=-1)
 async def edit(bot, message):
     m = message.video or message.document or message.audio
     try:
