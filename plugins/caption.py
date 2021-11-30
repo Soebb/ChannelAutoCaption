@@ -65,45 +65,46 @@ async def set(bot, message):
         await del_button(channel)
         await message.reply_text("✅The Button Removed Successfully.", quote=True)
 
-@autocaption.on_message(filters.channel & bbb & ~filters.edited, group=-1)
+@autocaption.on_message(filters.channel & 
 
-    if (message.chat.type == "channel") and (message.video or message.document or message.audio):
-        m = message.video or message.document or message.audio
-        try:
-            channel = str(message.chat.id).replace('-100', '').replace('1', '')
-            btn = await get_button(int(channel))
-            button = btn.button
-        except:
-            button = None
-            pass
-        try:
-            channel = str(message.chat.id).replace('-100', '')
-            cap = await get_caption(int(channel))
-            if message.audio:
-                caption = cap.caption.replace("{duration}", str(datetime.timedelta(seconds = m.duration))).replace("{mime_type}", m.mime_type).replace("{filename}", m.file_name).replace("{artist}", m.performer).replace("{title}", m.title).replace("{ext}", "." + m.file_name.rsplit('.', 1)[1])
-            elif message.video:
-                caption = cap.caption.replace("{duration}", str(datetime.timedelta(seconds = m.duration))).replace("{mime_type}", m.mime_type).replace("{filename}", m.file_name).replace("{width}", str(m.width)).replace("{height}", str(m.height)).replace("{ext}", "." + m.file_name.rsplit('.', 1)[1])
-            elif message.document:
-                caption = cap.caption.replace("{mime_type}", m.mime_type).replace("{filename}", m.file_name).replace("{ext}", "." + m.file_name.rsplit('.', 1)[1])
-        except:
-            caption = None
-            pass
+@Bot.on_message(filters.private & (filters.video | filters.document | filters.audio ) & ~filters.edited, group=-1)
+async def edit(bot, message):
+    m = message.video or message.document or message.audio
+    try:
+        channel = str(message.chat.id).replace('-100', '').replace('1', '')
+        btn = await get_button(int(channel))
+        button = btn.button
+    except:
+        button = None
+        pass
+    try:
+        channel = str(message.chat.id).replace('-100', '')
+        cap = await get_caption(int(channel))
+        if message.audio:
+            caption = cap.caption.replace("{duration}", str(datetime.timedelta(seconds = m.duration))).replace("{mime_type}", m.mime_type).replace("{filename}", m.file_name).replace("{artist}", m.performer).replace("{title}", m.title).replace("{ext}", "." + m.file_name.rsplit('.', 1)[1])
+        elif message.video:
+            caption = cap.caption.replace("{duration}", str(datetime.timedelta(seconds = m.duration))).replace("{mime_type}", m.mime_type).replace("{filename}", m.file_name).replace("{width}", str(m.width)).replace("{height}", str(m.height)).replace("{ext}", "." + m.file_name.rsplit('.', 1)[1])
+        elif message.document:
+            caption = cap.caption.replace("{mime_type}", m.mime_type).replace("{filename}", m.file_name).replace("{ext}", "." + m.file_name.rsplit('.', 1)[1])
+    except:
+        caption = None
+        pass
        
-        if button is not None:
-            Url = button.rsplit(' ', 1)[1]
-            Name = button.split(' | ')[0]
-            if caption is not None:
-                try:
-                    await bot.edit_message_caption(chat_id = message.chat.id, message_id = message.message_id, caption = caption, parse_mode = "markdown", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(Name, url=f"{Url}")]]))
-                except Exception as e:
-                    print(e)
-            elif caption is None:
-                try:
-                    await bot.edit_message_caption(chat_id = message.chat.id, message_id = message.message_id, reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(Name, url=f"{Url}")]]))
-                except Exception as e:
-                    print(e)
-        elif (button is None) and (caption is not None):
+    if button is not None:
+        Url = button.rsplit(' ', 1)[1]
+        Name = button.split(' | ')[0]
+        if caption is not None:
             try:
-                await bot.edit_message_caption(chat_id = message.chat.id, message_id = message.message_id, caption = caption, parse_mode = "markdown")
+                await bot.edit_message_caption(chat_id = message.chat.id, message_id = message.message_id, caption = caption, parse_mode = "markdown", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(Name, url=f"{Url}")]]))
             except Exception as e:
                 print(e)
+        elif caption is None:
+            try:
+                await bot.edit_message_caption(chat_id = message.chat.id, message_id = message.message_id, reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(Name, url=f"{Url}")]]))
+            except Exception as e:
+                print(e)
+    elif (button is None) and (caption is not None):
+        try:
+            await bot.edit_message_caption(chat_id = message.chat.id, message_id = message.message_id, caption = caption, parse_mode = "markdown")
+        except Exception as e:
+            print(e)
